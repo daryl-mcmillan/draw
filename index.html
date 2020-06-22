@@ -28,7 +28,7 @@ const layers = document.createElement( "div" );
 layers.style.position = "relative";
 document.body.appendChild( layers );
 
-const zoom = 10;
+const zoom = 8;
 const imageWidth = 64;
 const imageHeight = 64;
 const canvasWidth = imageWidth * zoom;
@@ -48,7 +48,16 @@ underlayCanvas.style.height = canvasHeight + "px";
 layers.appendChild( underlayCanvas );
 const underlayContext = underlayCanvas.getContext("2d");
 underlayContext.strokeStyle = "#808080FF";
-underlayContext.strokeRect( 100, 100, 400, 400 );
+function showTriange( x1, y1, x2, y2, x3, y3 ) {
+	underlayContext.clearRect( 0, 0, underlayCanvas.width, underlayCanvas.height );
+	underlayContext.moveTo( x1 * canvasWidth, y1 * canvasHeight );
+	underlayContext.lineTo( x2 * canvasWidth, y2 * canvasHeight );
+	underlayContext.lineTo( x3 * canvasWidth, y3 * canvasHeight );
+	underlayContext.lineTo( x1 * canvasWidth, y1 * canvasHeight );
+	underlayContext.stroke();
+}
+
+showTriange( 0.100, 0.100, 0.800, 0.300, 0.300, 0.900 );
 
 const canvas = document.createElement("canvas");
 canvas.style.borderWidth = "32px";
