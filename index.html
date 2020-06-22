@@ -22,21 +22,49 @@ class ColorPicker {
 	}
 }
 
+const tools = document.createElement("div");
+document.body.appendChild( tools );
+const layers = document.createElement( "div" );
+layers.style.position = "relative";
+document.body.appendChild( layers );
+
 const zoom = 10;
-const width = 64;
-const height = 64;
+const imageWidth = 64;
+const imageHeight = 64;
+const canvasWidth = imageWidth * zoom;
+const canvasHeight = imageHeight * zoom;
+
+const underlayCanvas = document.createElement( "canvas" );
+underlayCanvas.style.borderWidth = "32px";
+underlayCanvas.style.borderStyle = "double";
+underlayCanvas.style.borderColor = "white";
+underlayCanvas.width = canvasWidth;
+underlayCanvas.height = canvasHeight;
+underlayCanvas.style.position = "absolute";
+underlayCanvas.style.left = "0px";
+underlayCanvas.style.top = "0px";
+underlayCanvas.style.width = canvasWidth + "px";
+underlayCanvas.style.height = canvasHeight + "px";
+layers.appendChild( underlayCanvas );
+const underlayContext = underlayCanvas.getContext("2d");
+underlayContext.strokeStyle = "#808080FF";
+underlayContext.strokeRect( 100, 100, 400, 400 );
+
 const canvas = document.createElement("canvas");
 canvas.style.borderWidth = "32px";
 canvas.style.borderStyle = "double";
 canvas.style.borderColor = "black";
-canvas.width = width;
-canvas.height = height;
-canvas.style.width = (width * 10) + "px";
-canvas.style.height = (height * 10) + "px";
+canvas.width = imageWidth;
+canvas.height = imageHeight;
+canvas.style.position = "absolute";
+canvas.style.left = "0px";
+canvas.style.top = "0px";
+canvas.style.width = canvasWidth + "px";
+canvas.style.height = canvasHeight + "px";
 canvas.style.imageRendering = "pixelated";
-document.body.appendChild( canvas );
-const tools = document.createElement("div");
-document.body.appendChild( tools );
+canvas.style.mixBlendMode = "difference";
+layers.appendChild( canvas );
+
 const primaryColor = new ColorPicker( tools );
 const secondaryColor = new ColorPicker( tools, "#FFFFFF" );
 const sizer = document.createElement( "input" );
