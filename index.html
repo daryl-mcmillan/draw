@@ -1,0 +1,97 @@
+<html>
+<body>
+<script>
+
+class ColorPicker {
+	constructor(parent, defaultValue) {
+		defaultValue = defaultValue || "#000000";
+		const element = document.createElement( "input" );
+		element.type = "color";
+		element.value = defaultValue;
+		parent.appendChild( element );
+		this._element = element;
+	}
+	getColor() {
+		const str = this._element.value;
+		return {
+			r: parseInt( str.substr( 1, 2 ), 16 ),
+			g: parseInt( str.substr( 3, 2 ), 16 ),
+			b: parseInt( str.substr( 5, 2 ), 16 ),
+			a: 255
+		};
+	}
+}
+
+const zoom = 10;
+const width = 64;
+const height = 64;
+const canvas = document.createElement("canvas");
+canvas.style.borderWidth = "32px";
+canvas.style.borderStyle = "double";
+canvas.style.borderColor = "black";
+canvas.width = width;
+canvas.height = height;
+canvas.style.width = (width * 10) + "px";
+canvas.style.height = (height * 10) + "px";
+canvas.style.imageRendering = "pixelated";
+document.body.appendChild( canvas );
+const tools = document.createElement("div");
+document.body.appendChild( tools );
+const primaryColor = new ColorPicker( tools );
+const secondaryColor = new ColorPicker( tools, "#FFFFFF" );
+const sizer = document.createElement( "input" );
+sizer.type = "range";
+sizer.min = 1;
+sizer.max = 16;
+sizer.step = 1;
+sizer.value = 1;
+tools.appendChild( sizer );
+
+const ctx = canvas.getContext( "2d" );
+ctx.imageSmoothingEnabled = false;
+const pixel = ctx.getImageData( 0, 0, 1, 1 );
+function drawPixel( x, y, color ) {
+	const pixelX = Math.floor( x )
+	const pixelY = Math.floor( y )
+	pixel.data[0] = color.r;
+	pixel.data[1] = color.g;
+	pixel.data[2] = color.b;
+	pixel.data[3] = color.a;
+	ctx.putImageData( pixel, x, y );
+}
+function drawDot( x, y, color ) {
+	const linewidth = sizer.value;
+	const widthDelta = linewidth/2 - 0.4;
+	for( var pixelX=x-widthDelta; pixelX<x+widthDelta; pixelX++ ) {
+		for( var pixelY=y-widthDelta; pixelY<y+widthDelta; pixelY++ ) {
+			drawPixel( pixelX, pixelY, color );
+		}
+	}
+}
+function mouseEventHandler( e ) {
+	const x = e.offsetX / zoom;
+	const y = e.offsetY / zoom;
+	if( e.buttons & 1 ) {
+		drawDot( x, y, primaryColor.getColor() );
+	}
+	if( e.buttons & 2 ) {
+		drawDot( x, y, secondaryColor.getColor() );
+	}
+}
+canvas.onmousedown = mouseEventHandler;
+canvas.onmousemove = mouseEventHandler;
+canvas.oncontextmenu = function(e) {
+	e.preventDefault();
+};
+canvas.onwheel = function(e) {
+	if( e.deltaY > 0 ) {
+		sizer.value = parseInt( sizer.value ) - 1;
+	} else if( e.deltaY < 0 ) {
+		sizer.value = parseInt( sizer.value ) + 1;
+	}
+	e.preventDefault();
+}
+
+</script>
+</body>
+</html>
